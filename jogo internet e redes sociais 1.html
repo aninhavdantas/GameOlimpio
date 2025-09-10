@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quiz: História da Internet</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: #005813;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: #04fa56;
+      margin-top: 40px;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 90%;
+      max-width: 700px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 15px;
+      color: #444;
+    }
+
+    .options {
+      list-style: none;
+      padding: 0;
+    }
+
+    .options li {
+      margin-bottom: 10px;
+    }
+
+    .options button {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: 2px solid #1eb400;
+      border-radius: 5px;
+      background-color: #ffffff;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .options button:hover {
+      background-color: #00550b;
+      color: white;
+    }
+
+    .feedback {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    .next-btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #19b83e;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      display: none;
+    }
+
+    .result {
+      text-align: center;
+      font-size: 22px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Quiz: História da Internet</h1>
+    <div id="quiz">
+      <p class="question" id="question">Carregando pergunta...</p>
+      <ul class="options" id="options"></ul>
+      <p class="feedback" id="feedback"></p>
+      <button class="next-btn" id="nextButton">Próxima</button>
+    </div>
+    <div class="result" id="result"></div>
+  </div>
+
+  <script>
+    const quizData = [
+      {
+        question: "Como se chamava a primeira rede que deu origem à internet?",
+        options: ["NetWorld", "InfoNet", "ARPANET", "WebStart"],
+        answer: "ARPANET"
+      },
+      {
+        question: "Qual tecnologia foi essencial para padronizar a comunicação entre redes?",
+        options: ["Bluetooth", "TCP/IP", "HTTP", "Wi-Fi"],
+        answer: "TCP/IP"
+      },
+      {
+        question: "Quem criou a World Wide Web (WWW)?",
+        options: ["Steve Jobs", "Bill Gates", "Tim Berners-Lee", "Elon Musk"],
+        answer: "Tim Berners-Lee"
+      },
+      {
+        question: "Qual foi o primeiro navegador a se popularizar?",
+        options: ["Google Chrome", "Netscape", "Internet Explorer", "Mosaic"],
+        answer: "Mosaic"
+      },
+      {
+        question: "O que marcou a chamada “Guerra dos Navegadores”?",
+        options: [
+          "A disputa entre sites de redes sociais",
+          "A competição entre navegadores como Internet Explorer e Netscape",
+          "A criação dos memes",
+          "A chegada do Google"
+        ],
+        answer: "A competição entre navegadores como Internet Explorer e Netscape"
+      },
+      {
+        question: "Qual dessas empresas surgiu nos anos 90 como resultado do crescimento da internet?",
+        options: ["Spotify", "Facebook", "Amazon", "TikTok"],
+        answer: "Amazon"
+      },
+      {
+        question: "O que caracterizou a chamada Web 2.0?",
+        options: [
+          "A criação de sites sem imagens",
+          "A popularização dos jogos online",
+          "A interação dos usuários com criação de conteúdo",
+          "O fim da conexão discada"
+        ],
+        answer: "A interação dos usuários com criação de conteúdo"
+      },
+      {
+        question: "Qual navegador foi lançado pelo Google em 2008?",
+        options: ["Firefox", "Safari", "Edge", "Chrome"],
+        answer: "Chrome"
+      },
+      {
+        question: "Hoje, em 2024, a internet pode ser acessada por:",
+        options: [
+          "Apenas computadores e notebooks",
+          "Somente smartphones",
+          "Vários dispositivos, como TVs, tablets e até óculos inteligentes",
+          "Somente redes públicas"
+        ],
+        answer: "Vários dispositivos, como TVs, tablets e até óculos inteligentes"
+      },
+      {
+        question: "Quais tecnologias estão moldando a nova era da internet?",
+        options: [
+          "Rádio, fax e disquetes",
+          "Inteligência Artificial, IoT e 5G",
+          "CDs e DVDs",
+          "Internet discada e LAN"
+        ],
+        answer: "Inteligência Artificial, IoT e 5G"
+      }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const feedbackEl = document.getElementById("feedback");
+    const nextButton = document.getElementById("nextButton");
+    const resultEl = document.getElementById("result");
+
+    function showQuestion() {
+      feedbackEl.textContent = "";
+      nextButton.style.display = "none";
+      const q = quizData[currentQuestion];
+      questionEl.textContent = q.question;
+      optionsEl.innerHTML = "";
+
+      q.options.forEach(option => {
+        const btn = document.createElement("button");
+        btn.textContent = option;
+        btn.onclick = () => checkAnswer(option);
+        const li = document.createElement("li");
+        li.appendChild(btn);
+        optionsEl.appendChild(li);
+      });
+    }
+
+    function checkAnswer(selected) {
+      const correct = quizData[currentQuestion].answer;
+      if (selected === correct) {
+        feedbackEl.textContent = "✅ Resposta correta!";
+        feedbackEl.style.color = "green";
+        score++;
+      } else {
+        feedbackEl.textContent = `❌ Resposta errada! A correta é: ${correct}`;
+        feedbackEl.style.color = "red";
+      }
+      nextButton.style.display = "inline-block";
+      disableOptions();
+    }
+
+    function disableOptions() {
+      const buttons = document.querySelectorAll(".options button");
+      buttons.forEach(btn => {
+        btn.disabled = true;
+        btn.style.cursor = "default";
+      });
+    }
+
+    nextButton.onclick = () => {
+      currentQuestion++;
+      if (currentQuestion < quizData.length) {
+        showQuestion();
+      } else {
+        showResult();
+      }
+    };
+
+   function showResult() {
+  document.getElementById("quiz").style.display = "none";
+  let message = "";
+  let imageURL = "";
+
+  if (score <= 3) {
+    message = "🧐 Iniciante da Internet – hora de explorar mais!";
+    imageURL = "https://i.imgur.com/EZzn6MF.png";
+  } else if (score <= 6) {
+    message = "🔎 Explorador Digital – você está no caminho!";
+    imageURL = "https://i.imgur.com/o9ShcYm.png";
+  } else if (score <= 9) {
+    message = "💡 Mestre da Web – excelente!";
+    imageURL = "https://i.imgur.com/ZF6s192.png";
+  } else {
+    message = "👨‍💻 Hacker do Bem – você domina a história da internet!";
+    imageURL = "https://i.imgur.com/6k8zJ9R.png";
+  }
+
+  resultEl.innerHTML = `
+    <p>Você acertou <strong>${score}</strong> de ${quizData.length} perguntas.</p>
+    <p>${message}</p>
+    <img src="${imageURL}" alt="Resultado do Quiz" style="margin-top:20px; max-width: 100%; height: auto; border-radius: 10px;"/>
+    <br><br>
+    <button onclick="restartQuiz()" style="padding: 10px 20px; font-size: 16px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">🔁 Jogar Novamente</button>
+    <button onclick="shareResult()" style="padding: 10px 20px; font-size: 16px; background-color: #17a2b8; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">📤 Compartilhar</button>
+  `;
+}
+function restartQuiz() {
+  currentQuestion = 0;
+  score = 0;
+  document.getElementById("quiz").style.display = "block";
+  resultEl.innerHTML = "";
+  showQuestion();
+}
+
+function shareResult() {
+  const shareText = `Eu fiz ${score} de ${quizData.length} no Quiz da História da Internet! 🚀`;
+  const shareData = {
+    title: 'Quiz da História da Internet',
+    text: shareText,
+    url: window.location.href
+  };
+
+  if (navigator.share) {
+    navigator.share(shareData).then(() => {
+      console.log("Compartilhado com sucesso!");
+    }).catch(err => {
+      console.error("Erro ao compartilhar:", err);
+    });
+  } else {
+    alert("O compartilhamento não é suportado neste navegador. 😕");
+  }
+}
+
+
+
+    // Iniciar o quiz
+    showQuestion();
+  </script>
+
+</body>
+</html>
