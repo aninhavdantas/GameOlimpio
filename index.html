@@ -127,14 +127,18 @@
         <div class="result" id="result"></div>
     </div>
 
-  <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;" onload="this.contentWindow.postMessage('submit', '*')"></iframe>
-    <form id="google-form" action="https://script.google.com/macros/s/AKfycbwW4ds27zXA1oIqF3Wgwu2GuNmKoSdMg_lvcrf6AsERa3YFTwQZby5qHYkg1u5pMKhC/exec" method="POST" target="hidden_iframe" style="display:none;">
-        <input type="text" name="nome" id="hidden-nome">
-        <input type="text" name="turma" id="hidden-turma">
-        <input type="number" name="pontuacao" id="hidden-pontuacao">
+    <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;" onload="if(submitted) {alert('Dados enviados com sucesso!');}"></iframe>
+    <form id="google-form" action="https://docs.google.com/forms/u/0/d/1tuPSp0BMZNDTBxz0LnprWta34VdprkNVoiFw-UYim-I/previewResponse" method="POST" target="hidden_iframe" style="display:none;">
+        <input type="text" name="entry.854768510" id="hidden-nome">
+        <input type="text" name="entry.829836112" id="hidden-turma">
+        <input type="number" name="entry.29420985" id="hidden-pontuacao">
+        <input type="hidden" name="fvv" value="1">
+        <input type="hidden" name="submissionTimestamp" id="submissionTimestamp">
     </form>
 
     <script>
+        let submitted = false;
+        
         const quizData = [
             {
                 question: "Como se chamava a primeira rede que deu origem à internet?",
@@ -212,7 +216,6 @@
         let score = 0;
         let studentName = '';
         let studentClass = '';
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyaksrvdPZtbD21oo_qUMyCpelfU59MtO9Ijo7aq3Gq160T3gThPOtcs3DGoseC-uPd/exec';
 
         const questionEl = document.getElementById("question");
         const optionsEl = document.getElementById("options");
@@ -315,9 +318,11 @@
         }
         
         function sendDataToSheet() {
+            submitted = true;
             document.getElementById("hidden-nome").value = studentName;
             document.getElementById("hidden-turma").value = studentClass;
             document.getElementById("hidden-pontuacao").value = score;
+            document.getElementById("submissionTimestamp").value = Date.now();
             
             document.getElementById("google-form").submit();
         }
@@ -332,9 +337,6 @@
             document.getElementById("alunoNome").value = '';
             document.getElementById("alunoTurma").value = '';
         }
-
     </script>
 </body>
 </html>
-
-
