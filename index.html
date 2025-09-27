@@ -127,7 +127,7 @@
         <div class="result" id="result"></div>
     </div>
 
-    <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;" onload="if(submitted) {alert('Dados enviados com sucesso!');}"></iframe>
+  <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;" onload="this.contentWindow.postMessage('submit', '*')"></iframe>
     <form id="google-form" action="https://script.google.com/macros/s/AKfycbwW4ds27zXA1oIqF3Wgwu2GuNmKoSdMg_lvcrf6AsERa3YFTwQZby5qHYkg1u5pMKhC/exec" method="POST" target="hidden_iframe" style="display:none;">
         <input type="text" name="nome" id="hidden-nome">
         <input type="text" name="turma" id="hidden-turma">
@@ -336,4 +336,5 @@
     </script>
 </body>
 </html>
+
 
