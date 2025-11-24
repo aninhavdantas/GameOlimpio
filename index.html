@@ -129,7 +129,7 @@
 
     <script>
         // ==========================================================
-        // COLE AQUI A URL QUE VOCÊ COPIOU NA IMPLANTAÇÃO (DEPLOY)
+        // ATENÇÃO: SUBSTITUA PELA SUA NOVA URL DE IMPLANTAÇÃO
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyvh6XZibRYB0wpH6DprnQOj8p4Etm5K87jGnWFPAedpnxcv3HpZmEu7lMNLd_kNLUR/exec'; 
         // ==========================================================
 
@@ -254,5 +254,102 @@
             if (selected === correct) {
                 feedbackEl.textContent = "✅ Resposta correta!";
                 feedbackEl.style.color = "green";
-                score
+                score++;
+            } else {
+                feedbackEl.textContent = `❌ Resposta errada! A correta é: ${correct}`;
+                feedbackEl.style.color = "red";
+            }
+            nextButton.style.display = "inline-block";
+            disableOptions();
+        }
 
+        function disableOptions() {
+            const buttons = document.querySelectorAll(".options button");
+            buttons.forEach(btn => {
+                btn.disabled = true;
+                btn.style.cursor = "default";
+            });
+        }
+
+        nextButton.onclick = () => {
+            currentQuestion++;
+            if (currentQuestion < quizData.length) {
+                showQuestion();
+            } else {
+                showResult();
+            }
+        };
+
+        function showResult() {
+            document.getElementById("quiz").style.display = "none";
+            let message = "";
+            let imageURL = "";
+
+            if (score <= 3) {
+                message = "🧐 Iniciante da Internet – hora de explorar mais!";
+                imageURL = "https://i.imgur.com/EZzn6MF.png";
+            } else if (score <= 6) {
+                message = "🔎 Explorador Digital – você está no caminho!";
+                imageURL = "https://i.imgur.com/o9ShcYm.png";
+            } else if (score <= 9) {
+                message = "💡 Mestre da Web – excelente!";
+                imageURL = "https://i.imgur.com/ZF6s192.png";
+            } else {
+                message = "👨‍💻 Hacker do Bem – você domina a história da internet!";
+                imageURL = "https://i.imgur.com/6k8zJ9R.png";
+            }
+
+            resultEl.innerHTML = `
+                <p>Olá, **${studentName}** da turma **${studentClass}**!</p>
+                <p>Você acertou <strong>${score}</strong> de ${quizData.length} perguntas.</p>
+                <p>${message}</p>
+                <img src="${imageURL}" alt="Resultado do Quiz" style="margin-top:20px; max-width: 100%; height: auto; border-radius: 10px;"/>
+                <br><br>
+                <button onclick="restartQuiz()" style="padding: 10px 20px; font-size: 16px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">🔁 Jogar Novamente</button>
+            `;
+
+            // Envia para o script
+            sendDataToSheet();
+        }
+
+        // Função que conecta com o Google Apps Script
+        function sendDataToSheet() {
+            const dados = {
+                nome: studentName,
+                turma: studentClass,
+                pontuacao: score
+            };
+
+            console.log("Enviando dados...", dados);
+
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify(dados)
+            })
+            .then(response => response.json())
+            .then(result => {
+                if(result.status === 'success') {
+                    alert('Parabéns! Sua pontuação foi salva no sistema.');
+                } else {
+                    console.error('Erro no servidor:', result);
+                }
+            })
+            .catch(error => {
+                console.error('Erro de conexão:', error);
+                // Opcional: alert('Erro ao salvar. Verifique sua internet.');
+            });
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            document.getElementById("quiz").style.display = "block";
+            resultEl.innerHTML = "";
+            document.getElementById("cadastro").style.display = "block";
+            quizContainer.style.display = "none";
+            document.getElementById("alunoNome").value = '';
+            document.getElementById("alunoTurma").value = '';
+        }
+    </script>
+</body>
+</html>
